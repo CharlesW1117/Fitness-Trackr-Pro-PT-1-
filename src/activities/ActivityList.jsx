@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { deleteActivity } from "../api/activities";
 import { useAuth } from "../auth/AuthContext";
+import { Link } from "react-router-dom";
 
-export default function ActivityList({ activities, syncActivities }) {
+export default function ActivityList({ activities }) {
   return (
     <ul>
       {activities.map((activity) => (
-        <ActivityListItem
-          key={activity.id}
-          activity={activity}
-          syncActivities={syncActivities}
-        />
-      ))}
+  <div key={activity.id}>
+    <h3>
+      <Link to={`/activities/${activity.id}`}>{activity.name}</Link>
+    </h3>
+    <p>{activity.description}</p>
+  </div>
+))}
     </ul>
   );
 }
