@@ -7,24 +7,23 @@ import App from "./App.jsx";
 import Register from "./auth/Register";
 import Login from "./auth/Login";
 import ActivitiesPage from "./activities/ActivitiesPage";
+import ActivityDetails from "./activities/ActivityDetails.jsx";
 import { AuthProvider } from "./auth/AuthContext";
-import { PageProvider } from "./layout/PageContext";
 import Layout from "./layout/Layout.jsx";
 
 createRoot(document.getElementById("root")).render(
   <AuthProvider>
-    <PageProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<App />} />
-            <Route path="register" element={<Register />} />
-            <Route path="login" element={<Login />} />
-            <Route path="activities" element={<ActivitiesPage />} />
-            <Route path="*" element={<Error404 />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </PageProvider>
-  </AuthProvider>,
+    <BrowserRouter>
+      <Routes>
+        <Route path="/*" element={<Layout />}>
+          <Route index element={<App />} />
+          <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login />} />
+          <Route path="activities" element={<ActivitiesPage />} />
+          <Route path="activities/:activityId" element={<ActivityDetails />} />
+          <Route path="*" element={<Error404 />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  </AuthProvider>
 );

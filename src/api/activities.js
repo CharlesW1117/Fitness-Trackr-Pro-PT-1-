@@ -40,18 +40,38 @@ export async function createActivity(token, activity) {
  * Requests the API to delete the activity with the given ID.
  * A valid token is required.
  */
-export async function deleteActivity(token, id) {
+export async function deleteActivity(id, token) {
   if (!token) {
     throw Error("You must be signed in to delete an activity.");
   }
 
   const response = await fetch(API + "/activities/" + id, {
     method: "DELETE",
-    headers: { Authorization: "Bearer " + token },
+    headers: {
+      Authorization: "Bearer " + token,
+    },
   });
 
   if (!response.ok) {
     const result = await response.json();
     throw Error(result.message);
+  }
+}
+
+/**
+ * Fetches a single activity by its ID.
+ */
+export async function getActivityById(id) {
+  try {
+    const response = await fetch(API + "/activities/" + id);
+    if (!response.ok) {
+      const result = await response.json();
+      throw Error(result.message || "Failed to fetch activity details.");
+    }
+    const result = await response.json();
+    return result;
+  } catch (e) {
+    console.error(e);
+    throw e;
   }
 }
