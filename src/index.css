@@ -45,3 +45,34 @@ ol {
 p[role="alert"] {
   color: red;
 }
+
+/* Navbar styling */
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 2px solid #000000;
+}
+
+nav a {
+  color: #000000;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+nav a:hover {
+  color: #fe1212;
+}
+
+nav button {
+  background-color: transparent;
+  border: 1px solid #000000;
+  color: #cd99fd;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}

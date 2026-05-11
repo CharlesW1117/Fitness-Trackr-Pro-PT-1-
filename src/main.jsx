@@ -8,6 +8,8 @@ import Register from "./auth/Register";
 import Login from "./auth/Login";
 import ActivitiesPage from "./activities/ActivitiesPage";
 import ActivityDetails from "./activities/ActivityDetails.jsx";
+import RoutinesPage from "./routines/RoutinesPage.jsx";
+import RoutineDetails from "./routines/RoutineDetails.jsx";
 import { AuthProvider } from "./auth/AuthContext";
 import Layout from "./layout/Layout.jsx";
 
@@ -21,9 +23,11 @@ createRoot(document.getElementById("root")).render(
           <Route path="login" element={<Login />} />
           <Route path="activities" element={<ActivitiesPage />} />
           <Route path="activities/:activityId" element={<ActivityDetails />} />
+          <Route path="routines" element={<RoutinesPage />} />
+          <Route path="routines/:routineId" element={<RoutineDetails />} />
           <Route path="*" element={<Error404 />} />
         </Route>
       </Routes>
     </BrowserRouter>
-  </AuthProvider>
+  </AuthProvider>,
 );
