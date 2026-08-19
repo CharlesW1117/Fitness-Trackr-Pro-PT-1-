@@ -1,0 +1,48 @@
+.home-container {
+  text-align: center;
+  padding: 60px 20px;
+  color: #e6e6e6;
+}
+
+.home-title {
+  font-size: 48px;
+  margin-bottom: 10px;
+  color: #4CAF50;
+}
+
+.home-subtitle {
+  font-size: 20px;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.home-buttons {
+  margin-bottom: 40px;
+}
+
+.home-buttons .btn {
+  margin: 10px;
+}
+
+.home-features {
+  background-color: #1a1d23;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #2a2d33;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.home-features h2 {
+  margin-bottom: 10px;
+}
+
+.home-features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.home-features li {
+  margin: 10px 0;
+  font-size: 18px;
+}

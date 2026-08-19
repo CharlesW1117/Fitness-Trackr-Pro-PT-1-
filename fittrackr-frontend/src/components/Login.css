@@ -1,0 +1,22 @@
+.login-container {
+  text-align: center;
+  padding: 40px;
+  color: #e6e6e6;
+}
+
+.login-container h2 {
+  margin-bottom: 20px;
+}
+
+.login-message {
+  margin-top: 15px;
+  color: #FF3B3B;
+}
+
+.remember-me {
+  margin: 10px 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+}

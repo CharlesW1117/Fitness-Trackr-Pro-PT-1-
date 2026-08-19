@@ -1,0 +1,14 @@
+.register-container {
+  text-align: center;
+  padding: 40px;
+  color: #e6e6e6;
+}
+
+.register-container h2 {
+  margin-bottom: 20px;
+}
+
+.register-message {
+  margin-top: 15px;
+  color: #4CAF50;
+}
