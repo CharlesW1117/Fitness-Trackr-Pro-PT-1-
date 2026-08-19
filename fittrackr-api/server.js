@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000", // local development
-      "https://fittrackrpro.netlify.app", // ✅ correct deployed frontend
+      "https://fittrack1pro.netlify.app", // ✅ correct deployed frontend
     ],
     credentials: true,
   }),
