@@ -19,9 +19,12 @@ app.use(
       "http://localhost:3000", // local development
       "https://fittrack1pro.netlify.app", // ✅ correct deployed frontend
     ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   }),
 );
+
 app.use(express.json());
 
 // ✅ Mount routes
@@ -30,7 +33,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/progress", progressRouter);
 
-// ✅ Health check route (optional but recommended by Render Docs)
+// ✅ Health check route (recommended by Render Docs)
 app.get("/", (req, res) => {
   res.send("Fitness Trackr API is running successfully.");
 });
