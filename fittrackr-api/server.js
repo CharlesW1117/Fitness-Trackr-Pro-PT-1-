@@ -6,29 +6,27 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
+// ✅ Middleware
+app.use(express.json());
+
+// ✅ CORS configuration
+app.use(
+  cors({
+    origin: "https://fittrack1pro.netlify.app", // ✅ exact Netlify domain
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }),
+);
+
+// ✅ Handle preflight requests explicitly
+app.options("*", cors());
+
 // ✅ Routers
 const goalsRouter = require("./routes/goals");
 const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
 const progressRouter = require("./routes/progress");
-
-// ✅ Middleware
-app.use(express.json());
-
-// ✅ CORS configuration
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://fittrack1pro.netlify.app"); // ✅ exact Netlify domain
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-
-  // Handle preflight requests
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
-
-  next();
-});
 
 // ✅ Mount routes
 app.use("/api/goals", goalsRouter);
