@@ -11,19 +11,22 @@ const corsOptions = {
   credentials: true,
 };
 
+// ✅ Apply CORS globally before any routes
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// ✅ Handle preflight requests globally (Express v5‑compatible)
+// ✅ Handle preflight requests manually (Express v5‑safe)
 app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", corsOptions.origin);
+  res.header("Access-Control-Allow-Methods", corsOptions.methods.join(", "));
+  res.header(
+    "Access-Control-Allow-Headers",
+    corsOptions.allowedHeaders.join(", "),
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
+
   if (req.method === "OPTIONS") {
-    res.set({
-      "Access-Control-Allow-Origin": corsOptions.origin,
-      "Access-Control-Allow-Methods": corsOptions.methods.join(", "),
-      "Access-Control-Allow-Headers": corsOptions.allowedHeaders.join(", "),
-      "Access-Control-Allow-Credentials": "true",
-    });
-    return res.sendStatus(204);
+    return res.sendStatus(204); // respond to preflight
   }
   next();
 });
