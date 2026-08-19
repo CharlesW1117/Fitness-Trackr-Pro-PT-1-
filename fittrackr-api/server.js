@@ -12,7 +12,6 @@ const allowedOrigins = [
 // ✅ Dynamic CORS configuration
 const corsOptions = {
   origin: (origin, callback) => {
-    // Handle same-origin or curl requests (no Origin header)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
@@ -24,12 +23,28 @@ const corsOptions = {
   credentials: true,
 };
 
-// ✅ Apply CORS before routes
+// ✅ Apply CORS globally before any routes
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// ✅ Handle preflight requests explicitly
-app.options("*", cors(corsOptions));
+// ✅ Handle preflight requests manually (Express v5‑safe)
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    req.headers.origin || allowedOrigins[0],
+  );
+  res.header("Access-Control-Allow-Methods", corsOptions.methods.join(", "));
+  res.header(
+    "Access-Control-Allow-Headers",
+    corsOptions.allowedHeaders.join(", "),
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 // ✅ Routers
 const goalsRouter = require("./routes/goals");
