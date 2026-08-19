@@ -3,11 +3,24 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
-// ⭐ Use cors EXACTLY like the official docs say
+const allowedOrigins = [
+  "https://fittrack1pro.netlify.app",
+  "http://localhost:3000",
+  "http://localhost:3001",
+];
+
+if (process.env.FRONTEND_ORIGIN) {
+  allowedOrigins.push(process.env.FRONTEND_ORIGIN);
+}
+
 app.use(
   cors({
-    origin: "https://fittrack1pro.netlify.app",
-    credentials: true,
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
   }),
 );
 

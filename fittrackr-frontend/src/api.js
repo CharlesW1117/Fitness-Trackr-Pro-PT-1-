@@ -1,144 +1,101 @@
-// src/api.js
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = (process.env.REACT_APP_API_URL || "").replace(/\/$/, "");
 
-// 🧩 LOGIN USER
-export async function loginUser(username, password) {
-  const response = await fetch(`${API_URL}/api/users/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
-
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error || "Login failed.");
+async function request(path, options = {}) {
+  if (!API_URL) {
+    throw new Error(
+      "REACT_APP_API_URL is not set. Add it in .env and rebuild the frontend.",
+    );
   }
-  return data;
-}
 
-// 🧩 REGISTER USER
-export async function registerUser(username, password) {
-  const response = await fetch(`${API_URL}/api/users/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
-
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error || "Registration failed.");
-  }
-  return data;
-}
-
-// 🧩 GET ALL USERS
-export async function getUsers() {
-  const response = await fetch(`${API_URL}/api/users`);
-  if (!response.ok) {
-    throw new Error(`Error fetching users: ${response.statusText}`);
-  }
-  return response.json();
-}
-
-// 🧩 GET ALL ROUTINES
-export async function getRoutines() {
-  const response = await fetch(`${API_URL}/api/routines`);
-  if (!response.ok) {
-    throw new Error(`Error fetching routines: ${response.statusText}`);
-  }
-  return response.json();
-}
-
-// 🧩 CREATE NEW ROUTINE
-export async function createRoutine(token, routineData) {
-  const response = await fetch(`${API_URL}/api/routines`, {
-    method: "POST",
+  const response = await fetch(`${API_URL}${path}`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      ...(options.headers || {}),
     },
-    body: JSON.stringify(routineData),
+    ...options,
   });
 
-  const data = await response.json();
+  const data = await response.json().catch(() => ({}));
+
   if (!response.ok) {
-    throw new Error(data.error || "Failed to create routine.");
+    throw new Error(data.error || data.message || `Request failed (${response.status})`);
   }
+
   return data;
 }
 
-// === GOALS ===
-export async function getGoals(token) {
-  const response = await fetch(`${API_URL}/api/goals`, {
-    headers: { Authorization: `Bearer ${token}` },
+function authHeaders(token) {
+  return { Authorization: `Bearer ${token}` };
+}
+
+export async function loginUser(username, password) {
+  return request("/api/users/login", {
+    method: "POST",
+    body: JSON.stringify({ username, password }),
   });
-  return response.json();
+}
+
+export async function registerUser(username, password) {
+  return request("/api/users/register", {
+    method: "POST",
+    body: JSON.stringify({ username, password }),
+  });
+}
+
+export async function getGoals(token) {
+  return request("/api/goals", {
+    headers: authHeaders(token),
+  });
 }
 
 export async function addGoal(token, goalData) {
-  const response = await fetch(`${API_URL}/api/goals`, {
+  return request("/api/goals", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: authHeaders(token),
     body: JSON.stringify({
       name: goalData.name,
       description: goalData.description,
-      target: parseInt(goalData.target),
+      target: parseInt(goalData.target, 10),
     }),
   });
-  return response;
 }
 
 export async function deleteGoal(token, id) {
-  const response = await fetch(`${API_URL}/api/goals/${id}`, {
+  return request(`/api/goals/${id}`, {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: authHeaders(token),
   });
-  return response;
 }
 
 export async function editGoal(token, id, editedGoal) {
-  const response = await fetch(`${API_URL}/api/goals/${id}`, {
+  return request(`/api/goals/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: authHeaders(token),
     body: JSON.stringify(editedGoal),
   });
-  return response;
 }
 
-// === PROGRESS ===
 export async function viewProgress(token, goalId) {
-  const response = await fetch(`${API_URL}/api/progress/${goalId}`, {
-    headers: { Authorization: `Bearer ${token}` },
+  return request(`/api/progress/${goalId}`, {
+    headers: authHeaders(token),
   });
-  return response.json();
 }
 
 export async function addProgress(token, goalId, newProgress) {
-  const response = await fetch(`${API_URL}/api/progress`, {
+  return request("/api/progress", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: authHeaders(token),
     body: JSON.stringify({
       goal_id: goalId,
-      progress_value: parseInt(newProgress.progress_value),
+      progress_value: parseInt(newProgress.progress_value, 10),
       notes: newProgress.notes,
     }),
   });
-  return response;
 }
 
 export async function deleteProgress(token, id) {
-  const response = await fetch(`${API_URL}/api/progress/${id}`, {
+  return request(`/api/progress/${id}`, {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: authHeaders(token),
   });
-  return response;
 }
