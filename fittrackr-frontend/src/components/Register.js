@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { registerUser } from "../api";
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -9,14 +10,17 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:3000/api/users/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password, confirmPassword }),
-    });
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
 
-    const data = await response.json();
-    setMessage(data.error || data.message);
+    try {
+      const data = await registerUser(username, password);
+      setMessage(data.message || "User registered successfully");
+    } catch (error) {
+      setMessage(error.message || "Registration failed.");
+    }
   };
 
   return (

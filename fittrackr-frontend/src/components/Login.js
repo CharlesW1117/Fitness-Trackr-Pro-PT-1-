@@ -1,47 +1,23 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../api";
+import { saveToken } from "../authStorage";
 import "./Login.css";
 
 function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      const res = await fetch(
-        "https://fittrackr-api.onrender.com/api/users/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(form),
-          // ✅ Explicitly enable CORS and credentials
-          mode: "cors",
-          credentials: "include",
-        },
-      );
-
-      // Handle opaque or blocked responses
-      if (!res.ok) {
-        const text = await res.text();
-        setMessage(text || "Login failed due to CORS or network issue.");
-        return;
-      }
-
-      const data = await res.json();
-
-      // ⭐ Remember Me logic
-      if (rememberMe) {
-        localStorage.setItem("token", data.token);
-      } else {
-        sessionStorage.setItem("token", data.token);
-      }
-
-      window.location.href = "/dashboard";
+      const data = await loginUser(form.username, form.password);
+      saveToken(data.token, rememberMe);
+      navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
-      setMessage("Network error: Could not connect to the server.");
+      setMessage(error.message || "Network error: Could not connect to the server.");
     }
   };
 

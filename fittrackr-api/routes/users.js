@@ -20,10 +20,6 @@ router.post("/register", async (req, res) => {
 
 // POST /api/users/login
 router.post("/login", async (req, res) => {
-  // ⭐ REQUIRED: Add CORS headers directly on the route
-  res.header("Access-Control-Allow-Origin", "https://fittrack1pro.netlify.app");
-  res.header("Access-Control-Allow-Credentials", "true");
-
   const { username, password } = req.body;
 
   const result = await db.query("SELECT * FROM users WHERE username=$1", [

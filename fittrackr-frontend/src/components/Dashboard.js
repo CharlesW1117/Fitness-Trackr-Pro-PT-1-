@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import "./Dashboard.css";
 import Toast from "./Toast";
 import ProgressChart from "./ProgressChart";
+import {
+  getGoals,
+  addGoal,
+  deleteGoal,
+  editGoal,
+  viewProgress,
+  addProgress,
+  deleteProgress,
+} from "../api";
+import { getToken, clearToken } from "../authStorage";
 
 function Dashboard() {
   const [goals, setGoals] = useState([]);
@@ -25,51 +35,44 @@ function Dashboard() {
   });
   const [toast, setToast] = useState(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  const loadGoals = async () => {
+    const token = getToken();
     if (!token) {
       setMessage("You must log in first.");
       return;
     }
 
-    fetch("http://localhost:3000/api/goals", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          setMessage(data.error);
-        } else {
-          setGoals(Array.isArray(data) ? data : []);
-        }
-      })
-      .catch(() => setMessage("Failed to load goals"));
+    try {
+      const data = await getGoals(token);
+      setGoals(Array.isArray(data) ? data : []);
+    } catch (error) {
+      setMessage(error.message || "Failed to load goals");
+    }
+  };
+
+  useEffect(() => {
+    loadGoals();
   }, []);
 
   const handleAddGoal = async () => {
-    const token = localStorage.getItem("token");
-    await fetch("http://localhost:3000/api/goals", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        name: newGoal.name,
-        description: newGoal.description,
-        target: parseInt(newGoal.target),
-      }),
-    });
-    window.location.reload();
+    try {
+      const token = getToken();
+      await addGoal(token, newGoal);
+      setNewGoal({ name: "", description: "", target: "" });
+      await loadGoals();
+    } catch (error) {
+      setMessage(error.message || "Failed to add goal");
+    }
   };
 
   const handleDeleteGoal = async (id) => {
-    const token = localStorage.getItem("token");
-    await fetch(`http://localhost:3000/api/goals/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    window.location.reload();
+    try {
+      const token = getToken();
+      await deleteGoal(token, id);
+      await loadGoals();
+    } catch (error) {
+      setMessage(error.message || "Failed to delete goal");
+    }
   };
 
   const handleEditGoal = (goal) => {
@@ -82,72 +85,56 @@ function Dashboard() {
   };
 
   const handleSaveEdit = async (id) => {
-    const token = localStorage.getItem("token");
-    await fetch(`http://localhost:3000/api/goals/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(editedGoal),
-    });
-    setEditingGoal(null);
-    window.location.reload();
+    try {
+      const token = getToken();
+      await editGoal(token, id, editedGoal);
+      setEditingGoal(null);
+      await loadGoals();
+    } catch (error) {
+      setMessage(error.message || "Failed to save goal");
+    }
   };
 
   const handleViewProgress = async (goalId) => {
-    const token = localStorage.getItem("token");
-    const res = await fetch(`http://localhost:3000/api/progress/${goalId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    setProgressData(data);
-    setSelectedGoal(goalId);
+    try {
+      const token = getToken();
+      const data = await viewProgress(token, goalId);
+      setProgressData(Array.isArray(data) ? data : []);
+      setSelectedGoal(goalId);
+    } catch (error) {
+      setMessage(error.message || "Failed to load progress");
+    }
   };
 
   const handleAddProgress = async () => {
-    const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:3000/api/progress", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        goal_id: selectedGoal,
-        progress_value: parseInt(newProgress.progress_value),
-        notes: newProgress.notes,
-      }),
-    });
-
-    if (res.ok) {
+    try {
+      const token = getToken();
+      await addProgress(token, selectedGoal, newProgress);
       setToast({
         message: "🔥 Progress logged! Keep pushing forward!",
         type: "success",
       });
       setTimeout(() => setToast(null), 3000);
+      setNewProgress({ progress_value: "", notes: "" });
+      await handleViewProgress(selectedGoal);
+    } catch (error) {
+      setMessage(error.message || "Failed to log progress");
     }
-
-    setNewProgress({ progress_value: "", notes: "" });
-    handleViewProgress(selectedGoal);
   };
 
   const handleDeleteProgress = async (id) => {
-    const token = localStorage.getItem("token");
-    const res = await fetch(`http://localhost:3000/api/progress/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (res.ok) {
+    try {
+      const token = getToken();
+      await deleteProgress(token, id);
       setToast({
         message: "🗑️ Progress entry deleted successfully!",
         type: "success",
       });
       setTimeout(() => setToast(null), 3000);
+      await handleViewProgress(selectedGoal);
+    } catch (error) {
+      setMessage(error.message || "Failed to delete progress");
     }
-
-    handleViewProgress(selectedGoal);
   };
 
   return (
@@ -164,7 +151,7 @@ function Dashboard() {
 
       <button
         onClick={() => {
-          localStorage.removeItem("token");
+          clearToken();
           window.location.href = "/";
         }}
         className="btn btn-red logout-btn"
