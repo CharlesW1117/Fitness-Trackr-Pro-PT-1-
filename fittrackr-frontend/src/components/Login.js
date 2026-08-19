@@ -7,30 +7,42 @@ function Login() {
   const [message, setMessage] = useState("");
 
   const handleLogin = async () => {
-    const res = await fetch(
-      "https://fittrackr-api.onrender.com/api/users/login",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      },
-    );
+    try {
+      const res = await fetch(
+        "https://fittrackr-api.onrender.com/api/users/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+          // ✅ Explicitly enable CORS and credentials
+          mode: "cors",
+          credentials: "include",
+        },
+      );
 
-    const data = await res.json();
+      // Handle opaque or blocked responses
+      if (!res.ok) {
+        const text = await res.text();
+        setMessage(text || "Login failed due to CORS or network issue.");
+        return;
+      }
 
-    if (!res.ok) {
-      setMessage(data.error || "Login failed.");
-      return;
+      const data = await res.json();
+
+      // ⭐ Remember Me logic
+      if (rememberMe) {
+        localStorage.setItem("token", data.token);
+      } else {
+        sessionStorage.setItem("token", data.token);
+      }
+
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.error("Login error:", error);
+      setMessage("Network error: Could not connect to the server.");
     }
-
-    // ⭐ Remember Me logic
-    if (rememberMe) {
-      localStorage.setItem("token", data.token);
-    } else {
-      sessionStorage.setItem("token", data.token);
-    }
-
-    window.location.href = "/dashboard";
   };
 
   return (
@@ -52,7 +64,6 @@ function Login() {
         onChange={(e) => setForm({ ...form, password: e.target.value })}
       />
 
-      {/* ⭐ Remember Me checkbox */}
       <label className="remember-me">
         <input
           type="checkbox"
