@@ -1,26 +1,22 @@
-// ✅ Load environment variables
 require("dotenv").config();
-
-// ✅ Core dependencies
 const express = require("express");
 const cors = require("cors");
 const app = express();
 
-// ✅ Middleware
-app.use(express.json());
-
 // ✅ CORS configuration
 app.use(
   cors({
-    origin: "https://fittrack1pro.netlify.app", // ✅ exact Netlify domain
+    origin: "https://fittrack1pro.netlify.app", // exact Netlify domain
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   }),
 );
 
-// ✅ Handle preflight requests explicitly
-app.options("*", cors());
+// ✅ Handle preflight requests safely
+app.options("/*", cors()); // ← valid wildcard pattern
+
+app.use(express.json());
 
 // ✅ Routers
 const goalsRouter = require("./routes/goals");
@@ -34,7 +30,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/progress", progressRouter);
 
-// ✅ Health check route (recommended by Render Docs)
+// ✅ Health check route
 app.get("/", (req, res) => {
   res.send("Fitness Trackr API is running successfully.");
 });
