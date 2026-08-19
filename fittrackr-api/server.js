@@ -3,33 +3,33 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
-// ✅ CORS configuration
+// ✅ Allowlist of permitted origins
+const allowedOrigins = [
+  "https://fittrack1pro.netlify.app",
+  "http://localhost:3000",
+];
+
+// ✅ Dynamic CORS configuration
 const corsOptions = {
-  origin: "https://fittrack1pro.netlify.app", // exact Netlify domain
+  origin: (origin, callback) => {
+    // Handle same-origin or curl requests (no Origin header)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
 
-// ✅ Apply CORS globally before any routes
+// ✅ Apply CORS before routes
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// ✅ Handle preflight requests manually (Express v5‑safe)
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", corsOptions.origin);
-  res.header("Access-Control-Allow-Methods", corsOptions.methods.join(", "));
-  res.header(
-    "Access-Control-Allow-Headers",
-    corsOptions.allowedHeaders.join(", "),
-  );
-  res.header("Access-Control-Allow-Credentials", "true");
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204); // respond to preflight
-  }
-  next();
-});
+// ✅ Handle preflight requests explicitly
+app.options("*", cors(corsOptions));
 
 // ✅ Routers
 const goalsRouter = require("./routes/goals");
