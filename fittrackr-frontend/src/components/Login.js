@@ -7,11 +7,14 @@ function Login() {
   const [message, setMessage] = useState("");
 
   const handleLogin = async () => {
-    const res = await fetch("http://localhost:3000/api/users/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    const res = await fetch(
+      "https://fittrackr-api.onrender.com/api/users/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      },
+    );
 
     const data = await res.json();
 
