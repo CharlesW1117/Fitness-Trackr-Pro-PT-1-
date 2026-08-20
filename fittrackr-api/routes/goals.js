@@ -13,8 +13,8 @@ router.get("/", auth, async (req, res) => {
     console.log(`Fetched ${result.rowCount} goals for user ${req.user.id}`);
     res.status(200).json(result.rows);
   } catch (err) {
-    console.error("Error fetching goals:", err.message);
-    res.status(500).json({ error: "Failed to fetch goals" });
+    console.error("Error fetching goals:", err.code, err.message);
+    res.status(500).json({ error: `Failed to fetch goals: ${err.message}` });
   }
 });
 
@@ -31,8 +31,8 @@ router.post("/", auth, async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error("Error adding goal:", err.message);
-    res.status(500).json({ error: "Failed to add goal" });
+    console.error("Error adding goal:", err.code, err.message);
+    res.status(500).json({ error: `Failed to add goal: ${err.message}` });
   }
 });
 
@@ -46,8 +46,8 @@ router.delete("/:id", auth, async (req, res) => {
     console.log(`🗑️ Deleted goal ID ${req.params.id} for user ${req.user.id}`);
     res.status(204).send();
   } catch (err) {
-    console.error("Error deleting goal:", err.message);
-    res.status(500).json({ error: "Failed to delete goal" });
+    console.error("Error deleting goal:", err.code, err.message);
+    res.status(500).json({ error: `Failed to delete goal: ${err.message}` });
   }
 });
 
@@ -62,8 +62,8 @@ router.put("/:id", auth, async (req, res) => {
     console.log(`✏️ Updated goal ID ${req.params.id} for user ${req.user.id}`);
     res.status(200).json(result.rows[0]);
   } catch (err) {
-    console.error("Error updating goal:", err.message);
-    res.status(500).json({ error: "Failed to update goal" });
+    console.error("Error updating goal:", err.code, err.message);
+    res.status(500).json({ error: `Failed to update goal: ${err.message}` });
   }
 });
 

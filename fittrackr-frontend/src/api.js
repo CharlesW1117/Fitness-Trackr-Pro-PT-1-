@@ -7,12 +7,14 @@ async function request(path, options = {}) {
     );
   }
 
+  const { headers, ...rest } = options;
+
   const response = await fetch(`${API_URL}${path}`, {
+    ...rest,
     headers: {
       "Content-Type": "application/json",
-      ...(options.headers || {}),
+      ...(headers || {}),
     },
-    ...options,
   });
 
   const data = await response.json().catch(() => ({}));

@@ -13,8 +13,8 @@ router.post("/", auth, async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error("Error adding progress:", err.message);
-    res.status(500).json({ error: "Failed to add progress" });
+    console.error("Error adding progress:", err.code, err.message);
+    res.status(500).json({ error: `Failed to add progress: ${err.message}` });
   }
 });
 
@@ -23,15 +23,14 @@ router.get("/:goal_id", auth, async (req, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM progress WHERE goal_id = $1 ORDER BY created_at DESC",
-      [req.params.goal_id]
+      [req.params.goal_id],
     );
     res.status(200).json(result.rows);
   } catch (err) {
-    console.error("Error fetching progress:", err.message);
-    res.status(500).json({ error: "Failed to fetch progress" });
+    console.error("Error fetching progress:", err.code, err.message);
+    res.status(500).json({ error: `Failed to fetch progress: ${err.message}` });
   }
 });
-
 
 // Delete progress entry
 router.delete("/:id", auth, async (req, res) => {
@@ -45,8 +44,8 @@ router.delete("/:id", auth, async (req, res) => {
     }
     res.status(204).send();
   } catch (err) {
-    console.error("Error deleting progress:", err.message);
-    res.status(500).json({ error: "Failed to delete progress" });
+    console.error("Error deleting progress:", err.code, err.message);
+    res.status(500).json({ error: `Failed to delete progress: ${err.message}` });
   }
 });
 
