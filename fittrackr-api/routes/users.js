@@ -22,9 +22,17 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  const result = await db.query("SELECT * FROM users WHERE username=$1", [
-    username,
-  ]);
+  let result;
+  try {
+    result = await db.query("SELECT * FROM users WHERE username=$1", [
+      username,
+    ]);
+  } catch (err) {
+    console.error("Login database error:", err.code, err.message);
+    return res.status(500).json({
+      error: `Database connection failed (${err.code || err.message})`,
+    });
+  }
 
   const user = result.rows[0];
 

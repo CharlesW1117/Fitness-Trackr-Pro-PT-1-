@@ -31,11 +31,13 @@ const goalsRouter = require("./routes/goals");
 const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
 const progressRouter = require("./routes/progress");
+const healthRouter = require("./routes/health");
 
 app.use("/api/goals", goalsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/progress", progressRouter);
+app.use("/api/health", healthRouter);
 
 // ⭐ Health check
 app.get("/", (req, res) => {
