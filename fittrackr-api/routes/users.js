@@ -28,8 +28,10 @@ router.post("/login", async (req, res) => {
       username,
     ]);
   } catch (err) {
-    console.error("Login database error:", err.message);
-    return res.status(500).json({ error: "Database connection failed" });
+    console.error("Login database error:", err.code, err.message);
+    return res.status(500).json({
+      error: `Database connection failed (${err.code || err.message})`,
+    });
   }
 
   const user = result.rows[0];
