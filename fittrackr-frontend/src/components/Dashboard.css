@@ -9,6 +9,16 @@ body {
   overflow-x: hidden;
   color: #e6e6e6;
   position: relative;
+  /* Orbitron is a tight geometric font, so give it room to breathe. */
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: 0.08em;
+  line-height: 1.3;
 }
 
 /* === HEARTBEAT LINE MOVING ACROSS SCREEN === */

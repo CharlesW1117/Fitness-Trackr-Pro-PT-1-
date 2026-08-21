@@ -8,7 +8,30 @@
   margin-bottom: 20px;
 }
 
+.register-container form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.register-container .input-field {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.register-container .btn {
+  margin-right: 0;
+}
+
 .register-message {
   margin-top: 15px;
   color: #4CAF50;
+}
+
+.register-error {
+  margin-top: 15px;
+  color: #FF3B3B;
 }
