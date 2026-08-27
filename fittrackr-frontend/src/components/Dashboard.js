@@ -11,7 +11,7 @@ import {
   addProgress,
   deleteProgress,
 } from "../api";
-import { getToken, clearToken } from "../authStorage";
+import { getToken } from "../authStorage";
 
 function Dashboard() {
   const [goals, setGoals] = useState([]);
@@ -148,16 +148,6 @@ function Dashboard() {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <h2 className="dashboard-title">Dashboard</h2>
-
-      <button
-        onClick={() => {
-          clearToken();
-          window.location.href = "/";
-        }}
-        className="btn btn-red logout-btn"
-      >
-        Logout
-      </button>
 
       {message && <p className="error-text">{message}</p>}
 
