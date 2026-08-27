@@ -128,3 +128,24 @@ export async function deleteWater(token, id) {
     headers: authHeaders(token),
   });
 }
+
+export async function addMeasurement(token, measurement) {
+  return request("/api/measurements", {
+    method: "POST",
+    headers: authHeaders(token),
+    body: JSON.stringify(measurement),
+  });
+}
+
+export async function getMeasurements(token) {
+  return request("/api/measurements", {
+    headers: authHeaders(token),
+  });
+}
+
+export async function deleteMeasurement(token, id) {
+  return request(`/api/measurements/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  });
+}

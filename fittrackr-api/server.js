@@ -33,6 +33,7 @@ const usersRouter = require("./routes/users");
 const progressRouter = require("./routes/progress");
 const healthRouter = require("./routes/health");
 const waterRouter = require("./routes/water");
+const measurementsRouter = require("./routes/measurements");
 
 app.use("/api/goals", goalsRouter);
 app.use("/api/auth", authRouter);
@@ -40,6 +41,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/progress", progressRouter);
 app.use("/api/health", healthRouter);
 app.use("/api/water", waterRouter);
+app.use("/api/measurements", measurementsRouter);
 
 // ⭐ Health check
 app.get("/", (req, res) => {
