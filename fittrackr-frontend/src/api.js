@@ -101,3 +101,30 @@ export async function deleteProgress(token, id) {
     headers: authHeaders(token),
   });
 }
+
+export async function addWater(token, amountMl) {
+  return request("/api/water", {
+    method: "POST",
+    headers: authHeaders(token),
+    body: JSON.stringify({ amount_ml: parseInt(amountMl, 10) }),
+  });
+}
+
+export async function getWaterToday(token) {
+  return request("/api/water/today", {
+    headers: authHeaders(token),
+  });
+}
+
+export async function getWaterHistory(token, days = 7) {
+  return request(`/api/water/history?days=${days}`, {
+    headers: authHeaders(token),
+  });
+}
+
+export async function deleteWater(token, id) {
+  return request(`/api/water/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  });
+}
