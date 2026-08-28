@@ -1,0 +1,101 @@
+.water-card {
+  background-color: #1a1d23;
+  border: 1px solid #2a2d33;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 640px;
+}
+
+.water-total {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.water-amount {
+  font-size: 32px;
+  font-weight: 700;
+  color: #4A90E2;
+}
+
+.water-unit {
+  color: #b8b8b8;
+}
+
+.water-percent {
+  margin-left: 8px;
+  color: #b8b8b8;
+}
+
+.water-bar-track {
+  height: 14px;
+  background-color: #111317;
+  border: 1px solid #33363d;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.water-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, #4A90E2, #56ccf2);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.water-bar-fill.is-complete {
+  background: linear-gradient(to right, #4A90E2, #4CAF50);
+}
+
+.water-goal-note {
+  color: #4CAF50;
+  margin: 12px 0 0;
+}
+
+.water-quick-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.water-custom-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.water-quick-add .btn,
+.water-custom-add .btn {
+  margin-right: 0;
+}
+
+.water-section-title {
+  margin-top: 28px;
+}
+
+.water-list {
+  list-style: none;
+  padding: 0;
+  max-width: 640px;
+}
+
+.water-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1a1d23;
+  border: 1px solid #2a2d33;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 8px 0;
+}
+
+.water-time {
+  color: #b8b8b8;
+  font-size: 13px;
+}
+
+.water-chart {
+  max-width: 640px;
+}
