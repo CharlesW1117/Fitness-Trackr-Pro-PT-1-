@@ -7,7 +7,19 @@ const db = require("../db");
 router.get("/", auth, async (req, res) => {
   try {
     const result = await db.query(
-      "SELECT id, name, description, target FROM goals WHERE user_id = $1",
+      `SELECT
+         g.id,
+         g.name,
+         g.description,
+         g.target,
+         (SELECT p.progress_value
+            FROM progress p
+           WHERE p.goal_id = g.id
+           ORDER BY p.created_at DESC
+           LIMIT 1) AS latest_progress
+       FROM goals g
+       WHERE g.user_id = $1
+       ORDER BY g.id`,
       [req.user.id],
     );
     console.log(`Fetched ${result.rowCount} goals for user ${req.user.id}`);
