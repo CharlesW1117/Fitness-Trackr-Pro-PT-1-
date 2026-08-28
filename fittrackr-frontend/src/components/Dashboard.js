@@ -11,7 +11,7 @@ import {
   addProgress,
   deleteProgress,
 } from "../api";
-import { getToken, clearToken } from "../authStorage";
+import { getToken } from "../authStorage";
 
 // Derives at-a-glance completion info for a goal from its target and the
 // latest logged progress value (returned by GET /api/goals as latest_progress).
@@ -184,16 +184,6 @@ function Dashboard() {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <h2 className="dashboard-title">Dashboard</h2>
-
-      <button
-        onClick={() => {
-          clearToken();
-          window.location.href = "/";
-        }}
-        className="btn btn-red logout-btn"
-      >
-        Logout
-      </button>
 
       {message && <p className="error-text">{message}</p>}
 

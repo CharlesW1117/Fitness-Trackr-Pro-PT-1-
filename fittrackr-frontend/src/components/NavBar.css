@@ -1,0 +1,60 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 20px;
+  background-color: #14171c;
+  border-bottom: 1px solid #2a2d33;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: #4CAF50;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.navbar-link {
+  color: #b8b8b8;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.navbar-link:hover {
+  color: #e6e6e6;
+  background-color: #1a1d23;
+}
+
+.navbar-link.active {
+  color: #ffffff;
+  background-color: #4CAF50;
+}
+
+.navbar-logout {
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+/* Shared container for feature pages rendered under the nav. */
+.page-container {
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.page-container h2 {
+  margin-top: 0;
+}
