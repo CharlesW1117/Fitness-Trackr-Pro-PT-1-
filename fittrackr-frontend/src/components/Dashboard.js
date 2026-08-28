@@ -13,6 +13,19 @@ import {
 } from "../api";
 import { getToken, clearToken } from "../authStorage";
 
+// Derives at-a-glance completion info for a goal from its target and the
+// latest logged progress value (returned by GET /api/goals as latest_progress).
+function computeGoalStats(goal) {
+  const target = Number(goal.target) || 0;
+  const hasProgress =
+    goal.latest_progress !== null && goal.latest_progress !== undefined;
+  const latest = hasProgress ? Number(goal.latest_progress) : 0;
+  const percent =
+    target > 0 ? Math.min(100, Math.round((latest / target) * 100)) : 0;
+  const completed = hasProgress && target > 0 && latest >= target;
+  return { target, latest, hasProgress, percent, completed };
+}
+
 function Dashboard() {
   const [goals, setGoals] = useState([]);
   const [message, setMessage] = useState("");
@@ -110,13 +123,22 @@ function Dashboard() {
     try {
       const token = getToken();
       await addProgress(token, selectedGoal, newProgress);
+
+      const goal = goals.find((g) => g.id === selectedGoal);
+      const target = Number(goal?.target) || 0;
+      const justCompleted =
+        target > 0 && Number(newProgress.progress_value) >= target;
+
       setToast({
-        message: "🔥 Progress logged! Keep pushing forward!",
+        message: justCompleted
+          ? "🏆 Goal complete! Amazing work — you hit your target!"
+          : "🔥 Progress logged! Keep pushing forward!",
         type: "success",
       });
       setTimeout(() => setToast(null), 3000);
       setNewProgress({ progress_value: "", notes: "" });
       await handleViewProgress(selectedGoal);
+      await loadGoals();
     } catch (error) {
       setMessage(error.message || "Failed to log progress");
     }
@@ -132,10 +154,24 @@ function Dashboard() {
       });
       setTimeout(() => setToast(null), 3000);
       await handleViewProgress(selectedGoal);
+      await loadGoals();
     } catch (error) {
       setMessage(error.message || "Failed to delete progress");
     }
   };
+
+  const totalGoals = goals.length;
+  const completedCount = goals.filter(
+    (g) => computeGoalStats(g).completed,
+  ).length;
+  const activeCount = totalGoals - completedCount;
+  const avgProgress =
+    totalGoals === 0
+      ? 0
+      : Math.round(
+          goals.reduce((sum, g) => sum + computeGoalStats(g).percent, 0) /
+            totalGoals,
+        );
 
   return (
     <div className="dashboard-container">
@@ -189,74 +225,121 @@ function Dashboard() {
         </button>
       </div>
 
+      {totalGoals > 0 && (
+        <div className="goal-summary">
+          <span className="summary-stat">
+            <strong>{activeCount}</strong> active
+          </span>
+          <span className="summary-sep">·</span>
+          <span className="summary-stat">
+            <strong>{completedCount}</strong> completed
+          </span>
+          <span className="summary-sep">·</span>
+          <span className="summary-stat">
+            <strong>{avgProgress}%</strong> avg progress
+          </span>
+        </div>
+      )}
+
       <ul className="goal-list">
-        {goals.map((goal) => (
-          <li key={goal.id} className="goal-item">
-            {editingGoal === goal.id ? (
-              <>
-                <input
-                  className="input-field"
-                  value={editedGoal.name}
-                  onChange={(e) =>
-                    setEditedGoal({ ...editedGoal, name: e.target.value })
-                  }
-                />
-                <input
-                  className="input-field"
-                  value={editedGoal.description}
-                  onChange={(e) =>
-                    setEditedGoal({
-                      ...editedGoal,
-                      description: e.target.value,
-                    })
-                  }
-                />
-                <input
-                  type="number"
-                  className="input-field"
-                  value={editedGoal.target}
-                  onChange={(e) =>
-                    setEditedGoal({ ...editedGoal, target: e.target.value })
-                  }
-                />
-                <button
-                  onClick={() => handleSaveEdit(goal.id)}
-                  className="btn btn-green"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => setEditingGoal(null)}
-                  className="btn btn-gray"
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <>
-                <strong>{goal.name}</strong> — {goal.description}
-                <button
-                  onClick={() => handleEditGoal(goal)}
-                  className="btn btn-blue"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteGoal(goal.id)}
-                  className="btn btn-red"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={() => handleViewProgress(goal.id)}
-                  className="btn btn-purple"
-                >
-                  View Progress
-                </button>
-              </>
-            )}
-          </li>
-        ))}
+        {goals.map((goal) => {
+          const stats = computeGoalStats(goal);
+          return (
+            <li
+              key={goal.id}
+              className={`goal-item${stats.completed ? " completed" : ""}`}
+            >
+              {editingGoal === goal.id ? (
+                <>
+                  <input
+                    className="input-field"
+                    value={editedGoal.name}
+                    onChange={(e) =>
+                      setEditedGoal({ ...editedGoal, name: e.target.value })
+                    }
+                  />
+                  <input
+                    className="input-field"
+                    value={editedGoal.description}
+                    onChange={(e) =>
+                      setEditedGoal({
+                        ...editedGoal,
+                        description: e.target.value,
+                      })
+                    }
+                  />
+                  <input
+                    type="number"
+                    className="input-field"
+                    value={editedGoal.target}
+                    onChange={(e) =>
+                      setEditedGoal({ ...editedGoal, target: e.target.value })
+                    }
+                  />
+                  <button
+                    onClick={() => handleSaveEdit(goal.id)}
+                    className="btn btn-green"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setEditingGoal(null)}
+                    className="btn btn-gray"
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="goal-header">
+                    <span className="goal-name">
+                      <strong>{goal.name}</strong>
+                      {goal.description ? ` — ${goal.description}` : ""}
+                    </span>
+                    {stats.completed && (
+                      <span className="goal-badge">✓ Completed</span>
+                    )}
+                  </div>
+
+                  <div className="goal-progress">
+                    <div className="progress-bar-track">
+                      <div
+                        className={`progress-bar-fill${
+                          stats.completed ? " is-complete" : ""
+                        }`}
+                        style={{ width: `${stats.percent}%` }}
+                      />
+                    </div>
+                    <span className="progress-label">
+                      {stats.latest} / {stats.target || "—"} ({stats.percent}%)
+                    </span>
+                  </div>
+
+                  <div className="goal-actions">
+                    <button
+                      onClick={() => handleEditGoal(goal)}
+                      className="btn btn-blue"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteGoal(goal.id)}
+                      className="btn btn-red"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => handleViewProgress(goal.id)}
+                      className="btn btn-purple"
+                    >
+                      View Progress
+                    </button>
+                  </div>
+                </>
+              )}
+            </li>
+          );
+        })}
       </ul>
 
       {selectedGoal && (
